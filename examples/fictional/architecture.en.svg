@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1100" width="1000" height="1100" role="img" aria-labelledby="title description" lang="en">
+  <title id="title">Fictional request triage</title>
+  <desc id="description">A semantic classifier produces advisory data. Independent rules control a deterministic gate. All outcomes are simulated.</desc>
+  <style>text { font-family: sans-serif; fill: #172438; font-size: 19px; }
+.heading { font-weight: bold; font-size: 23px; }
+.boundary-label { font-weight: bold; font-size: 20px; }
+.edge-label { font-size: 16px; paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+.box { fill: #fff; stroke: #33465e; stroke-width: 2; }
+.data { fill: none; stroke: #245a85; stroke-width: 2; }
+.control { fill: none; stroke: #713f12; stroke-width: 3; stroke-dasharray: 7 4; }</style>
+  <defs>
+    <marker id="arrow-data" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#245a85" />
+    </marker>
+    <marker id="arrow-control" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#713f12" />
+    </marker>
+  </defs>
+  <rect width="1000" height="1100" fill="#fff" />
+  <text x="30" y="40" class="heading">Fictional request triage</text>
+  <g data-boundary-id="context">
+    <rect x="30" y="70" width="940" height="165" rx="10" fill="#f1f5f9" stroke="#54657a" stroke-width="2" />
+    <text x="50" y="105" class="boundary-label">External inputs</text>
+  </g>
+  <g data-boundary-id="semantic">
+    <rect x="30" y="260" width="420" height="290" rx="10" fill="#e8f2fc" stroke="#54657a" stroke-width="2" />
+    <text x="50" y="295" class="boundary-label">Semantic boundary — no authority</text>
+  </g>
+  <g data-boundary-id="deterministic">
+    <rect x="510" y="260" width="460" height="770" rx="10" fill="#fff5df" stroke="#54657a" stroke-width="2" />
+    <text x="530" y="295" class="boundary-label">Deterministic authority boundary</text>
+  </g>
+  <g data-entity-id="request" data-boundary="context">
+    <rect x="80" y="140" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="182.0" text-anchor="middle">Request</text>
+  </g>
+  <g data-entity-id="classify" data-boundary="semantic">
+    <rect x="80" y="310" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="352.0" text-anchor="middle">Classification</text>
+  </g>
+  <g data-entity-id="typed" data-boundary="semantic">
+    <rect x="80" y="460" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="502.0" text-anchor="middle">Typed result</text>
+  </g>
+  <g data-entity-id="rules" data-boundary="context">
+    <rect x="570" y="140" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="182.0" text-anchor="middle">Independent rules</text>
+  </g>
+  <g data-entity-id="gate" data-boundary="deterministic">
+    <rect x="570" y="460" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="502.0" text-anchor="middle">Policy + authorization</text>
+  </g>
+  <g data-entity-id="hold" data-boundary="deterministic">
+    <rect x="570" y="630" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="672.0" text-anchor="middle">Hold</text>
+  </g>
+  <g data-entity-id="review" data-boundary="deterministic">
+    <rect x="570" y="780" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="822.0" text-anchor="middle">Review</text>
+  </g>
+  <g data-entity-id="eligible" data-boundary="deterministic">
+    <rect x="570" y="930" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="972.0" text-anchor="middle">Eligible (simulation)</text>
+  </g>
+  <g data-edge-id="request_classify" data-from="request" data-to="classify">
+    <path d="M 235 210 V 245 H 15 V 345 H 80" class="data" marker-end="url(#arrow-data)" />
+    <text x="140" y="252" text-anchor="middle" class="edge-label">Input</text>
+  </g>
+  <g data-edge-id="classify_typed" data-from="classify" data-to="typed">
+    <path d="M 235 380 V 460" class="data" marker-end="url(#arrow-data)" />
+    <text x="235" y="422" text-anchor="middle" class="edge-label">Classify</text>
+  </g>
+  <g data-edge-id="typed_gate" data-from="typed" data-to="gate">
+    <path d="M 390 495 H 570" class="data" marker-end="url(#arrow-data)" />
+    <text x="480" y="480" text-anchor="middle" class="edge-label">Advisory data</text>
+  </g>
+  <g data-edge-id="rules_gate" data-from="rules" data-to="gate">
+    <path d="M 725 210 V 245 H 490 V 430 H 725 V 460" class="control" marker-end="url(#arrow-control)" />
+    <text x="675" y="420" text-anchor="middle" class="edge-label">Independent control</text>
+  </g>
+  <g data-edge-id="gate_hold" data-from="gate" data-to="hold">
+    <path d="M 725 530 V 630" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="586" text-anchor="middle" class="edge-label">Abstain / closed</text>
+  </g>
+  <g data-edge-id="gate_review" data-from="gate" data-to="review">
+    <path d="M 880 490 H 915 V 815 H 880" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="753" text-anchor="middle" class="edge-label">Uncertain / open</text>
+  </g>
+  <g data-edge-id="gate_eligible" data-from="gate" data-to="eligible">
+    <path d="M 880 510 H 945 V 965 H 880" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="903" text-anchor="middle" class="edge-label">Supported / open</text>
+  </g>
+  <text x="30" y="1070">Solid: data · Dashed: independent control · Local demo, review pending</text>
+</svg>

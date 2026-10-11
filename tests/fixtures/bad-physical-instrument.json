@@ -1,0 +1,314 @@
+{
+  "schema_version": "0.1",
+  "intent": "software_architecture",
+  "brief": {
+    "audience": "Software engineers and first-time readers",
+    "use": "Explain software architecture, but build a physical tabletop instrument",
+    "facts": [
+      "Typed semantic results are advisory data.",
+      "Independent deterministic policy gates every simulated outcome."
+    ],
+    "metaphors": [
+      "A physical tabletop instrument is required by the incorrect brief."
+    ],
+    "assumptions": [],
+    "languages": [
+      "en",
+      "ja"
+    ],
+    "acceptable_outputs": [
+      "svg"
+    ],
+    "deployment_target": "Local review only; no publication"
+  },
+  "provenance": {
+    "historical_source_revision": "fictional-spec-v1",
+    "current_integration_revision": "fictional-integration-v1"
+  },
+  "view": {
+    "type": "physical_mechanism",
+    "style": "isometric_machine",
+    "physical_metaphor_requested": true
+  },
+  "sources": [
+    {
+      "id": "historical_spec",
+      "path": "examples/fictional/sources/historical-v1.md",
+      "sha256": "e0c69354d4b5d809c584a772eb18846737305bcfb32409f46092d7d4ac5a8748",
+      "revision": "fictional-spec-v1",
+      "scope": "historical"
+    },
+    {
+      "id": "current_spec",
+      "path": "examples/fictional/sources/current-v1.md",
+      "sha256": "e0c69354d4b5d809c584a772eb18846737305bcfb32409f46092d7d4ac5a8748",
+      "revision": "fictional-integration-v1",
+      "scope": "current_integration"
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "context",
+      "kind": "external",
+      "can_authorize": false,
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "semantic",
+      "kind": "semantic",
+      "can_authorize": false,
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "deterministic",
+      "kind": "deterministic",
+      "can_authorize": true,
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "request",
+      "role": "input",
+      "boundary": "context",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "classify",
+      "role": "classifier",
+      "boundary": "semantic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "typed",
+      "role": "typed_result",
+      "boundary": "semantic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "rules",
+      "role": "rule",
+      "boundary": "context",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "gate",
+      "role": "policy_gate",
+      "boundary": "deterministic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "hold",
+      "role": "outcome",
+      "boundary": "deterministic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "review",
+      "role": "outcome",
+      "boundary": "deterministic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "eligible",
+      "role": "outcome",
+      "boundary": "deterministic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "request_classify",
+      "from": "request",
+      "to": "classify",
+      "kind": "data",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "classify_typed",
+      "from": "classify",
+      "to": "typed",
+      "kind": "data",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "typed_gate",
+      "from": "typed",
+      "to": "gate",
+      "kind": "data",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "rules_gate",
+      "from": "rules",
+      "to": "gate",
+      "kind": "control",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "gate_hold",
+      "from": "gate",
+      "to": "hold",
+      "kind": "control",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "gate_review",
+      "from": "gate",
+      "to": "review",
+      "kind": "control",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "gate_eligible",
+      "from": "gate",
+      "to": "eligible",
+      "kind": "control",
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "implications": {
+    "allowed": [
+      "Classifier emits typed advisory data.",
+      "Independent rules control the deterministic gate.",
+      "Eligible is a simulated candidate only."
+    ],
+    "prohibited": [
+      "High confidence authorizes an action.",
+      "The semantic model owns policy or safety.",
+      "API contract compatibility proves semantic parity.",
+      "Eligible triggers real dispatch."
+    ]
+  },
+  "locales": {
+    "en": {
+      "title": "Fictional request triage",
+      "description": "A semantic classifier produces advisory data. Independent rules control a deterministic gate. All outcomes are simulated.",
+      "entities": {
+        "request": "Request",
+        "classify": "Classification",
+        "typed": "Typed result",
+        "rules": "Independent rules",
+        "gate": "Policy + authorization",
+        "hold": "Hold",
+        "review": "Review",
+        "eligible": "Eligible (simulation)"
+      },
+      "edges": {
+        "request_classify": "Input",
+        "classify_typed": "Classify",
+        "typed_gate": "Advisory data",
+        "rules_gate": "Independent control",
+        "gate_hold": "Abstain / closed",
+        "gate_review": "Uncertain / open",
+        "gate_eligible": "Supported / open"
+      },
+      "boundaries": {
+        "context": "External inputs",
+        "semantic": "Semantic boundary — no authority",
+        "deterministic": "Deterministic authority boundary"
+      }
+    },
+    "ja": {
+      "title": "架空のリクエスト判定フロー",
+      "description": "意味分類の出力は助言データです。独立した規則が決定論的ゲートを制御し、全ての結果はシミュレーションです。",
+      "entities": {
+        "request": "リクエスト",
+        "classify": "意味分類",
+        "typed": "型付き結果",
+        "rules": "独立した規則",
+        "gate": "ポリシー・認可",
+        "hold": "保留",
+        "review": "レビュー",
+        "eligible": "候補（模擬）"
+      },
+      "edges": {
+        "request_classify": "入力",
+        "classify_typed": "分類",
+        "typed_gate": "助言データ",
+        "rules_gate": "独立した制御",
+        "gate_hold": "棄権／閉鎖",
+        "gate_review": "不確実／開放",
+        "gate_eligible": "対応可能／開放"
+      },
+      "boundaries": {
+        "context": "外部入力",
+        "semantic": "意味判断の境界（認可権限なし）",
+        "deterministic": "決定論的な認可の境界"
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "examples/fictional/architecture.en.svg",
+      "format": "svg",
+      "locale": "en"
+    },
+    {
+      "path": "examples/fictional/architecture.ja.svg",
+      "format": "svg",
+      "locale": "ja"
+    }
+  ],
+  "review_gates": {
+    "semantic_review": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    },
+    "visual_review": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    },
+    "publication_approval": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    }
+  }
+}
