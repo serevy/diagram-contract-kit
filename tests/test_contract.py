@@ -408,6 +408,23 @@ class ArtifactTests(unittest.TestCase):
                 self.assertEqual(render_example.main(['--check']), 1)
                 self.assertEqual(stale.read_bytes(), b'stale')
 
+    def test_missing_svg_diagnostic_handles_an_aliased_source_root(self):
+        from unittest.mock import patch
+        contract = load_json(EXAMPLE)
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            real_root = base/'content'
+            for source in contract['sources']:
+                path = real_root/source['path']
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes((ROOT/source['path']).read_bytes())
+            alias_root = base/'alias'
+            symlink_or_skip(self, alias_root, real_root, target_is_directory=True)
+            with patch.object(render_example, 'ROOT', alias_root), redirect_stderr(io.StringIO()) as diagnostics:
+                self.assertEqual(render_example.main(['--check']), 1)
+                self.assertIn('architecture.en.svg', diagnostics.getvalue())
+                self.assertFalse(any(real_root.rglob('*.svg')))
+
     def test_renderer_blocks_invalid_contract_before_writing(self):
         from unittest.mock import patch
         bad = load_json(ROOT/'tests/fixtures/bad-physical-instrument.json')

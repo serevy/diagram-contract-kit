@@ -131,7 +131,7 @@ def main(argv=None):
     for path, expected in outputs:
         if args.check:
             if not path.is_file() or path.read_bytes() != expected:
-                print(f"FAIL: missing or stale committed output: {path.relative_to(ROOT)}", file=sys.stderr)
+                print(f"FAIL: missing or stale committed output: {path.relative_to(ROOT.resolve())}", file=sys.stderr)
                 return 1
         else:
             path.write_bytes(expected)
