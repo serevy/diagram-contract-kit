@@ -1,0 +1,551 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://serevy.github.io/diagram-contract-kit/schema/diagram-contract.schema.json",
+  "title": "Diagram contract v0.1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "intent",
+    "brief",
+    "provenance",
+    "view",
+    "rendering",
+    "sources",
+    "boundaries",
+    "entities",
+    "edges",
+    "implications",
+    "locales",
+    "artifacts",
+    "review_gates"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "software_architecture",
+        "dataflow",
+        "state",
+        "policy",
+        "physical_mechanism"
+      ]
+    },
+    "brief": {
+      "type": "object",
+      "required": [
+        "audience",
+        "use",
+        "facts",
+        "metaphors",
+        "assumptions",
+        "languages",
+        "acceptable_outputs",
+        "deployment_target"
+      ],
+      "properties": {
+        "audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "use": {
+          "type": "string",
+          "minLength": 1
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "metaphors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "acceptable_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "svg",
+              "html",
+              "png",
+              "pdf",
+              "mermaid",
+              "d2"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "deployment_target": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "historical_source_revision",
+        "current_integration_revision"
+      ],
+      "properties": {
+        "historical_source_revision": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "current_integration_revision": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "view": {
+      "type": "object",
+      "required": [
+        "type",
+        "style",
+        "physical_metaphor_requested"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "labelled_graph",
+            "physical_mechanism"
+          ]
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "boxes_arrows_boundaries",
+            "isometric_machine"
+          ]
+        },
+        "physical_metaphor_requested": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "path",
+          "sha256",
+          "revision",
+          "scope"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "historical",
+              "current_integration"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "can_authorize",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "semantic",
+              "deterministic",
+              "external"
+            ]
+          },
+          "can_authorize": {
+            "type": "boolean"
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "boundary",
+          "assertion",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "input",
+              "classifier",
+              "typed_result",
+              "policy_gate",
+              "rule",
+              "outcome",
+              "component",
+              "state"
+            ]
+          },
+          "boundary": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "assertion": {
+            "type": "string",
+            "enum": [
+              "factual",
+              "metaphorical",
+              "assumption"
+            ]
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "from",
+          "to",
+          "kind",
+          "source_ids"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "from": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "data",
+              "control"
+            ]
+          },
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_-]*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "implications": {
+      "type": "object",
+      "required": [
+        "allowed",
+        "prohibited"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "prohibited": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "locales": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "entities",
+          "edges",
+          "boundaries"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "entities": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "edges": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "boundaries": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "format",
+          "locale"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "svg",
+              "html",
+              "png",
+              "pdf",
+              "mermaid",
+              "d2"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "review_gates": {
+      "type": "object",
+      "required": [
+        "semantic_review",
+        "visual_review",
+        "publication_approval"
+      ],
+      "properties": {
+        "semantic_review": {
+          "$ref": "#/$defs/review_gate"
+        },
+        "visual_review": {
+          "$ref": "#/$defs/review_gate"
+        },
+        "publication_approval": {
+          "$ref": "#/$defs/review_gate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rendering": {
+      "type": "object",
+      "required": [
+        "directives",
+        "purpose_sha256",
+        "ambiguity"
+      ],
+      "properties": {
+        "directives": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "labelled_entities",
+              "directed_edges",
+              "boundaries",
+              "physical_mechanism",
+              "isometric_machine"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "purpose_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "ambiguity": {
+          "type": "string",
+          "enum": [
+            "clear",
+            "unresolved"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "review_gate": {
+      "type": "object",
+      "required": [
+        "required",
+        "status",
+        "reviewer"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "const": true
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved"
+          ]
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

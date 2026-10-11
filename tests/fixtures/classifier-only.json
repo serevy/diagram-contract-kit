@@ -1,0 +1,189 @@
+{
+  "schema_version": "0.1",
+  "intent": "dataflow",
+  "brief": {
+    "audience": "Software engineers and first-time readers",
+    "use": "Explain read-only request classification; no action, eligibility or authorization is modelled.",
+    "facts": [
+      "The classifier emits typed advisory data only.",
+      "This read-only view does not model a protected action."
+    ],
+    "metaphors": [],
+    "assumptions": [],
+    "languages": [
+      "en",
+      "ja"
+    ],
+    "acceptable_outputs": [
+      "svg"
+    ],
+    "deployment_target": "Local review only; no publication"
+  },
+  "provenance": {
+    "historical_source_revision": null,
+    "current_integration_revision": "fictional-integration-v1"
+  },
+  "view": {
+    "type": "labelled_graph",
+    "style": "boxes_arrows_boundaries",
+    "physical_metaphor_requested": false
+  },
+  "sources": [
+    {
+      "id": "current_spec",
+      "path": "examples/fictional/sources/current-v1.md",
+      "sha256": "e0c69354d4b5d809c584a772eb18846737305bcfb32409f46092d7d4ac5a8748",
+      "revision": "fictional-integration-v1",
+      "scope": "current_integration"
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "context",
+      "kind": "external",
+      "can_authorize": false,
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "semantic",
+      "kind": "semantic",
+      "can_authorize": false,
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "request",
+      "role": "input",
+      "boundary": "context",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "classify",
+      "role": "classifier",
+      "boundary": "semantic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "typed",
+      "role": "typed_result",
+      "boundary": "semantic",
+      "assertion": "factual",
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "request_classify",
+      "from": "request",
+      "to": "classify",
+      "kind": "data",
+      "source_ids": [
+        "current_spec"
+      ]
+    },
+    {
+      "id": "classify_typed",
+      "from": "classify",
+      "to": "typed",
+      "kind": "data",
+      "source_ids": [
+        "current_spec"
+      ]
+    }
+  ],
+  "implications": {
+    "allowed": [
+      "A classifier emits advisory typed data."
+    ],
+    "prohibited": [
+      "Classification authorizes an action."
+    ]
+  },
+  "locales": {
+    "en": {
+      "title": "Read-only classifier",
+      "description": "Only request, classification and typed output; no authorization.",
+      "entities": {
+        "request": "Request",
+        "classify": "Classification",
+        "typed": "Typed result"
+      },
+      "edges": {
+        "request_classify": "Input",
+        "classify_typed": "Classify"
+      },
+      "boundaries": {
+        "context": "External inputs",
+        "semantic": "Semantic boundary — no authority"
+      }
+    },
+    "ja": {
+      "title": "読み取り専用の分類フロー",
+      "description": "入力・分類・型付き出力だけを示し、認可処理を含みません。",
+      "entities": {
+        "request": "リクエスト",
+        "classify": "意味分類",
+        "typed": "型付き結果"
+      },
+      "edges": {
+        "request_classify": "入力",
+        "classify_typed": "分類"
+      },
+      "boundaries": {
+        "context": "外部入力",
+        "semantic": "意味判断の境界（認可権限なし）"
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "path": "examples/fictional/classifier.en.svg",
+      "format": "svg",
+      "locale": "en"
+    },
+    {
+      "path": "examples/fictional/classifier.ja.svg",
+      "format": "svg",
+      "locale": "ja"
+    }
+  ],
+  "review_gates": {
+    "semantic_review": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    },
+    "visual_review": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    },
+    "publication_approval": {
+      "required": true,
+      "status": "pending",
+      "reviewer": null
+    }
+  },
+  "rendering": {
+    "directives": [
+      "labelled_entities",
+      "directed_edges",
+      "boundaries"
+    ],
+    "purpose_sha256": "17a1c58c5a439739df3ffb1307ad0ea75fb39619fd37c6df30eb7d0c9c1c0292",
+    "ambiguity": "clear"
+  }
+}

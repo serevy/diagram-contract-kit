@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1100" width="1000" height="1100" role="img" aria-labelledby="title description" lang="ja">
+  <title id="title">架空のリクエスト判定フロー</title>
+  <desc id="description">意味分類の出力は助言データです。独立した規則が決定論的ゲートを制御し、全ての結果はシミュレーションです。</desc>
+  <style>text { font-family: sans-serif; fill: #172438; font-size: 19px; }
+.heading { font-weight: bold; font-size: 23px; }
+.boundary-label { font-weight: bold; font-size: 20px; }
+.edge-label { font-size: 16px; paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+.box { fill: #fff; stroke: #33465e; stroke-width: 2; }
+.data { fill: none; stroke: #245a85; stroke-width: 2; }
+.control { fill: none; stroke: #713f12; stroke-width: 3; stroke-dasharray: 7 4; }</style>
+  <defs>
+    <marker id="arrow-data" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#245a85" />
+    </marker>
+    <marker id="arrow-control" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#713f12" />
+    </marker>
+  </defs>
+  <rect width="1000" height="1100" fill="#fff" />
+  <text x="30" y="40" class="heading">架空のリクエスト判定フロー</text>
+  <g data-boundary-id="context">
+    <rect x="30" y="70" width="940" height="165" rx="10" fill="#f1f5f9" stroke="#54657a" stroke-width="2" />
+    <text x="50" y="105" class="boundary-label">外部入力</text>
+  </g>
+  <g data-boundary-id="semantic">
+    <rect x="30" y="260" width="420" height="290" rx="10" fill="#e8f2fc" stroke="#54657a" stroke-width="2" />
+    <text x="50" y="295" class="boundary-label">意味判断の境界（認可権限なし）</text>
+  </g>
+  <g data-boundary-id="deterministic">
+    <rect x="510" y="260" width="460" height="770" rx="10" fill="#fff5df" stroke="#54657a" stroke-width="2" />
+    <text x="530" y="295" class="boundary-label">決定論的な認可の境界</text>
+  </g>
+  <g data-entity-id="request" data-boundary="context">
+    <rect x="80" y="140" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="182.0" text-anchor="middle">リクエスト</text>
+  </g>
+  <g data-entity-id="classify" data-boundary="semantic">
+    <rect x="80" y="310" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="352.0" text-anchor="middle">意味分類</text>
+  </g>
+  <g data-entity-id="typed" data-boundary="semantic">
+    <rect x="80" y="460" width="310" height="70" rx="6" class="box" />
+    <text x="235.0" y="502.0" text-anchor="middle">型付き結果</text>
+  </g>
+  <g data-entity-id="rules" data-boundary="context">
+    <rect x="570" y="140" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="182.0" text-anchor="middle">独立した規則</text>
+  </g>
+  <g data-entity-id="gate" data-boundary="deterministic">
+    <rect x="570" y="460" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="502.0" text-anchor="middle">ポリシー・認可</text>
+  </g>
+  <g data-entity-id="hold" data-boundary="deterministic">
+    <rect x="570" y="630" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="672.0" text-anchor="middle">保留</text>
+  </g>
+  <g data-entity-id="review" data-boundary="deterministic">
+    <rect x="570" y="780" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="822.0" text-anchor="middle">レビュー</text>
+  </g>
+  <g data-entity-id="eligible" data-boundary="deterministic">
+    <rect x="570" y="930" width="310" height="70" rx="6" class="box" />
+    <text x="725.0" y="972.0" text-anchor="middle">候補（模擬）</text>
+  </g>
+  <g data-edge-id="request_classify" data-from="request" data-to="classify">
+    <path d="M 235 210 V 245 H 15 V 345 H 80" class="data" marker-end="url(#arrow-data)" />
+    <text x="140" y="252" text-anchor="middle" class="edge-label">入力</text>
+  </g>
+  <g data-edge-id="classify_typed" data-from="classify" data-to="typed">
+    <path d="M 235 380 V 460" class="data" marker-end="url(#arrow-data)" />
+    <text x="235" y="422" text-anchor="middle" class="edge-label">分類</text>
+  </g>
+  <g data-edge-id="typed_gate" data-from="typed" data-to="gate">
+    <path d="M 390 495 H 570" class="data" marker-end="url(#arrow-data)" />
+    <text x="480" y="480" text-anchor="middle" class="edge-label">助言データ</text>
+  </g>
+  <g data-edge-id="rules_gate" data-from="rules" data-to="gate">
+    <path d="M 725 210 V 245 H 490 V 430 H 725 V 460" class="control" marker-end="url(#arrow-control)" />
+    <text x="675" y="420" text-anchor="middle" class="edge-label">独立した制御</text>
+  </g>
+  <g data-edge-id="gate_hold" data-from="gate" data-to="hold">
+    <path d="M 725 530 V 630" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="586" text-anchor="middle" class="edge-label">棄権／閉鎖</text>
+  </g>
+  <g data-edge-id="gate_review" data-from="gate" data-to="review">
+    <path d="M 880 490 H 915 V 815 H 880" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="753" text-anchor="middle" class="edge-label">不確実／開放</text>
+  </g>
+  <g data-edge-id="gate_eligible" data-from="gate" data-to="eligible">
+    <path d="M 880 510 H 945 V 965 H 880" class="control" marker-end="url(#arrow-control)" />
+    <text x="725" y="903" text-anchor="middle" class="edge-label">対応可能／開放</text>
+  </g>
+  <text x="30" y="1070">実線：データ　破線：独立した制御　ローカル例・レビュー待ち</text>
+</svg>
