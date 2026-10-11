@@ -310,5 +310,13 @@
       "status": "pending",
       "reviewer": null
     }
+  },
+  "rendering": {
+    "directives": [
+      "physical_mechanism",
+      "isometric_machine"
+    ],
+    "purpose_sha256": "071f8bcd6f712e8e236ee0dd148a8be68c9fe575507eb770a4ccdfa998b77cab",
+    "ambiguity": "clear"
   }
 }

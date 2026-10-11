@@ -10,6 +10,13 @@ import sys
 
 SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schema/diagram-contract.schema.json"
 FACTUAL_INTENTS = {"software_architecture", "dataflow", "state", "policy"}
+FACTUAL_DIRECTIVES = {"labelled_entities", "directed_edges", "boundaries"}
+PHYSICAL_DIRECTIVES = {"physical_mechanism", "isometric_machine"}
+
+
+def purpose_hash(contract):
+    """Bind the recorded purpose text, not a claim that its meaning was verified."""
+    return hashlib.sha256(contract["brief"]["use"].encode("utf-8")).hexdigest()
 
 
 def load_json(path):
@@ -120,6 +127,19 @@ def validate(contract, root):
           or not view["physical_metaphor_requested"] or not contract["brief"]["metaphors"]):
         fail("METAPHOR_SELECTION", "physical_mechanism needs explicit user selection and documented metaphors")
 
+    rendering = contract["rendering"]
+    expected_directives = FACTUAL_DIRECTIVES if intent in FACTUAL_INTENTS else PHYSICAL_DIRECTIVES
+    if set(rendering["directives"]) != expected_directives:
+        fail("RENDER_MISMATCH", f"{intent} renderer directives must be {sorted(expected_directives)}; "
+             "reconcile the authorized deliverable and rendering instructions BEFORE generation")
+    if rendering["purpose_sha256"] != purpose_hash(contract):
+        fail("PURPOSE_CHANGED", "brief.use changed since its typed directives were recorded; "
+             "reinspect sources and reconcile purpose/instructions before recording a new binding. "
+             "Ask a human if meaning remains ambiguous; do not simply rehash contradictory instructions")
+    if rendering["ambiguity"] != "clear":
+        fail("RENDER_AMBIGUOUS", "purpose or rendering instructions remain unresolved; "
+             "clarify against sources or with a human BEFORE generation")
+
     indexes = {}
     all_ids = set()
     for group in ("sources", "boundaries", "entities", "edges"):
@@ -136,6 +156,11 @@ def validate(contract, root):
         revision = contract["provenance"][f"{scope}_source_revision" if scope == "historical"
                                           else "current_integration_revision"]
         matching = [s for s in sources.values() if s["scope"] == scope]
+        if scope == "historical" and revision is None:
+            if matching:
+                fail("PROVENANCE", "null historical_source_revision means no historical baseline; "
+                     "it cannot coexist with historical source records")
+            continue
         if not matching:
             fail("PROVENANCE", f"a {scope} source is required; keep historical evidence separate")
         for source in matching:
@@ -177,19 +202,25 @@ def validate(contract, root):
     for edge in edges.values():
         if edge["from"] not in entities or edge["to"] not in entities:
             fail("EDGE_ENDPOINT", f"{edge['id']}: endpoints must reference existing entities")
-        elif edge["kind"] == "control" and entities[edge["from"]]["role"] not in {"rule", "policy_gate"}:
+        elif edge["kind"] == "control" and (
+                entities[edge["from"]]["role"] in {"classifier", "typed_result"} or
+                boundaries.get(entities[edge["from"]]["boundary"], {}).get("kind") == "semantic"):
             fail("AUTHORITY", f"{edge['id']}: semantic output is data, never authorization/control")
 
-    models_decision = any(e["role"] in {"classifier", "typed_result", "policy_gate", "outcome"}
-                          for e in entities.values()) or any(b["can_authorize"] for b in boundaries.values())
-    if intent in FACTUAL_INTENTS and models_decision:
+    models_authorization = any(e["role"] in {"policy_gate", "outcome"} for e in entities.values()) or any(
+        b["can_authorize"] for b in boundaries.values())
+    if intent in FACTUAL_INTENTS and models_authorization:
         gates = [e for e in entities.values() if e["role"] == "policy_gate"]
         outcomes = [e for e in entities.values() if e["role"] == "outcome"]
         if not gates or not outcomes:
-            fail("POLICY_GATE", "factual flow requires a policy_gate and an outcome")
+            fail("POLICY_GATE", "authorization flow requires a policy_gate and a protected outcome; "
+                 "read-only classification alone does not require either")
         for gate in gates:
             incoming = [edge for edge in edges.values() if edge["to"] == gate["id"]]
-            for role, kind in (("rule", "control"), ("typed_result", "data")):
+            required_inputs = [("rule", "control")]
+            if any(e["role"] in {"classifier", "typed_result"} for e in entities.values()):
+                required_inputs.append(("typed_result", "data"))
+            for role, kind in required_inputs:
                 if not any(edge["kind"] == kind and entities.get(edge["from"], {}).get("role") == role
                            and entities.get(edge["from"], {}).get("assertion") == "factual"
                            for edge in incoming):
@@ -247,11 +278,24 @@ def validate(contract, root):
     return errors
 
 
+def render_plan(contract, root):
+    """Validate before deriving typed producer inputs; never forward brief.use as a prompt."""
+    errors = validate(contract, root)
+    if errors:
+        raise ValueError("contract blocked before generation\n" + "\n".join(errors))
+    plan = {key: contract[key] for key in
+            ("schema_version", "intent", "view", "entities", "edges", "boundaries", "locales", "artifacts")}
+    plan["directives"] = sorted(contract["rendering"]["directives"])
+    return plan
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("contract", type=Path)
     parser.add_argument("--root", type=Path, default=Path.cwd(),
                         help="local source/artifact root (default: current directory)")
+    parser.add_argument("--render-plan", action="store_true",
+                        help="emit validated typed producer inputs as JSON; never forward free-text purpose instructions")
     args = parser.parse_args(argv)
     try:
         contract = load_json(args.contract)
@@ -264,6 +308,10 @@ def main(argv=None):
         for error in errors:
             print(error, file=sys.stderr)
         return 1
+    if args.render_plan:
+        # ASCII escaping makes JSON output portable even through Windows legacy code pages.
+        print(json.dumps(render_plan(contract, args.root), indent=2))
+        return 0
     print("PASS: structural contract checks only; semantic/visual review and publication approval remain independent.")
     print("Review gates: " + ", ".join(f"{name}={gate['status']}" for name, gate in contract["review_gates"].items()))
     return 0

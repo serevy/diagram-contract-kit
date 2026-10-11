@@ -308,5 +308,14 @@
       "status": "pending",
       "reviewer": null
     }
+  },
+  "rendering": {
+    "directives": [
+      "labelled_entities",
+      "directed_edges",
+      "boundaries"
+    ],
+    "purpose_sha256": "e8801a1ea2fe8100323dd486c8daa6ec02834adf1eabe22e911cd601417e9a4b",
+    "ambiguity": "clear"
   }
 }

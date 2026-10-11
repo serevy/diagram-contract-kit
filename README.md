@@ -18,6 +18,12 @@ instrument while the intended deliverable was a software architecture chart.
 The generator followed that brief. Our regression blocks the mismatch before
 generation; it does not blame the renderer. See [case provenance](THIRD_PARTY_NOTICES.md).
 
+**Structural lint does not understand arbitrary prose contradictions.** Purpose
+text is separate from typed renderer directives, and changing it blocks generation
+until reconciled with sources. Producers must use the validated `--render-plan`,
+never append `brief.use` as a prompt. A wrongly rebound purpose may still pass
+lint; unresolved meaning must be clarified before generation.
+
 ## Quick start
 
 Python 3.10+ and Git are sufficient. No package installation, browser,
@@ -30,6 +36,10 @@ python3 scripts/validate_contract.py examples/fictional/diagram-contract.json
 python3 -m unittest discover -s tests -v
 python3 scripts/render_example.py --check
 ```
+
+On Windows, use `python` in place of `python3`. The same suite runs on Linux and
+Windows CI. `.gitattributes` preserves LF source/SVG bytes on either platform;
+symlink tests skip only when Windows lacks symlink support/privileges.
 
 Expected valid-contract output (exit 0):
 
@@ -48,6 +58,7 @@ python3 scripts/validate_contract.py tests/fixtures/bad-physical-instrument.json
 FAIL: contract blocked before rendering
 VIEW_MISMATCH: software_architecture requires labelled boxes/arrows/boundaries; remove the physical instrument requirement BEFORE rendering. An explicitly requested metaphor belongs in a separate physical_mechanism contract.
 VIEW_MISMATCH: factual intent cannot require a physical metaphor; use a separate teaching view
+RENDER_MISMATCH: software_architecture renderer directives must be ['boundaries', 'directed_edges', 'labelled_entities']; reconcile the authorized deliverable and rendering instructions BEFORE generation
 ```
 
 `tests/fixtures/ambiguous-authority.json` also fails: its integration revision
@@ -76,6 +87,9 @@ contract before rendering. Record source revisions and byte hashes, facts,
 assumptions, entity/edge IDs, separate authority boundaries, en/ja labels,
 SVG outputs and pending human review gates. Validate it with the kit CLI
 using this repository as --root. Stop rendering if the contract fails.
+Separate purpose prose from typed rendering.directives; mark unresolved meaning
+before generation and use only the validated --render-plan for drawing.
+For classification-only flows, do not invent a policy/authorization gate.
 Return the contract and validation result; do not publish or merge.
 ```
 
@@ -99,7 +113,22 @@ For another repository, use an explicit local root:
 
 ```sh
 python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root /path/to/project
+python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root /path/to/project --render-plan
 ```
+
+`intent` records the user-authorized deliverable. `rendering.directives` records
+bounded producer commands: factual views require `labelled_entities`,
+`directed_edges`, `boundaries`; physical views require `physical_mechanism`,
+`isometric_machine`. Their disagreement is a pre-generation failure.
+`rendering.purpose_sha256` binds the UTF-8 bytes of `brief.use`, so the review's
+free-text-only mutation ("Explain the software architecture; build a physical
+tabletop instrument") fails `PURPOSE_CHANGED`. After source inspection resolves
+the purpose and directives, record a new binding; do not just hash the confusing
+text to bypass review. If ambiguity remains, set `rendering.ambiguity` to
+`unresolved` and obtain human clarification. This fails `RENDER_AMBIGUOUS`.
+The JSON plan excludes purpose prose and only supplies typed directions plus
+graph/label data. This prevents purpose prose from becoming renderer commands;
+it does not perform generic NLP or prove that recorded intent is truthful.
 
 The bundled JSON Schema (Draft 2020-12) defines fields and types. The stdlib
 validator implements exactly its used vocabulary: `$ref` to local `$defs`,
@@ -112,11 +141,19 @@ silently disappear. JSON only; there is no YAML parser.
 
 Additional checks cover globally unique IDs, existing graph endpoints and
 boundaries, source references and SHA-256, revision/scope agreement, locale key
-parity, safe relative artifact/source paths, and explicit review gates. Decision
-flows require factual typed result data plus independent rule control into a
-deterministic policy gate; semantic outputs cannot control/authorize outcomes
-or bypass that gate. Generic graphs can use `component` and `state` roles
-without inventing authorization machinery.
+parity, safe relative artifact/source paths, and explicit review gates.
+Read-only input → classifier → typed result diagrams need no policy gate.
+Gate checks apply when a factual graph models `policy_gate`, protected `outcome`,
+or a boundary with `can_authorize: true`. Such flows require independent rule
+control; flows modelling semantic classification also require factual typed
+result data into the gate. Semantic outputs cannot control/authorize protected
+outcomes or bypass the gate. Generic graphs can use `component` and `state`
+roles and ordinary control edges outside the semantic boundary. `outcome` means
+a protected action/eligibility result, not an arbitrary data output.
+
+[The classifier-only fixture](tests/fixtures/classifier-only.json) is a positive
+read-only dataflow with no protected action, no invented gate and no fabricated
+historical baseline. Its output paths are future artifacts, not committed demos.
 
 Historical sources and current integration sources are separate local records.
 The demo stores immutable historical and current snapshots with explicit
@@ -125,6 +162,15 @@ commit/revision identifiers. On integration drift, review a **new** current
 revision; never rewrite historical hashes to make a failing check pass.
 The validator verifies local byte identity and recorded revision agreement;
 it cannot authenticate a Git revision name or prove source correctness.
+For a greenfield project with no historical baseline, use
+`historical_source_revision: null` and omit historical source records. Current
+integration source files, revision and hashes remain required. Null plus existing
+historical records is rejected, as is a non-null historical revision without
+historical sources. Existing frozen snapshots and SVGs are preserved unchanged.
+
+The pre-merge v0.1 format now requires `rendering`; contracts from the initial PR
+commit must add it after reconciling their purpose and directives. All bundled
+examples and negative fixtures have been updated to the same schema.
 
 ## Fictional demo and outputs
 

@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
 
-from validate_contract import load_json, local_path, validate
+from validate_contract import load_json, local_path, render_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "examples/fictional/diagram-contract.json"
@@ -98,16 +98,19 @@ def main(argv=None):
     parser.add_argument("--check", action="store_true", help="require committed SVGs to exist and match; never regenerate")
     args = parser.parse_args(argv)
     contract = load_json(CONTRACT)
-    errors = validate(contract, ROOT)
-    if errors:
-        print("FAIL: rendering blocked\n" + "\n".join(errors), file=sys.stderr)
+    try:
+        plan = render_plan(contract, ROOT)
+    except ValueError as exc:
+        print(f"FAIL: rendering blocked\n{exc}", file=sys.stderr)
         return 1
     # This fixed layout supports only the original demo graph and factual entities.
     expected_roles = {"request": ("input", "context"), "rules": ("rule", "context"),
                       "classify": ("classifier", "semantic"), "typed": ("typed_result", "semantic"),
                       "gate": ("policy_gate", "deterministic"), "hold": ("outcome", "deterministic"),
                       "review": ("outcome", "deterministic"), "eligible": ("outcome", "deterministic")}
-    if ({e["id"] for e in contract["entities"]} != set(BOXES)
+    if (plan["view"]["type"] != "labelled_graph"
+            or set(plan["directives"]) != {"labelled_entities", "directed_edges", "boundaries"}
+            or {e["id"] for e in contract["entities"]} != set(BOXES)
             or {e["id"] for e in contract["edges"]} != set(ROUTES)
             or {b["id"] for b in contract["boundaries"]} != set(BOUNDARIES)
             or any(e["assertion"] != "factual" or (e["role"], e["boundary"]) != expected_roles[e["id"]]
@@ -123,7 +126,7 @@ def main(argv=None):
         if locale not in {"en", "ja"} or artifact["format"] != "svg" or artifact["path"] != f"examples/fictional/architecture.{locale}.svg":
             print("FAIL: demo supports only its declared en/ja SVG paths", file=sys.stderr)
             return 1
-        outputs.append((local_path(ROOT, artifact["path"]), render(contract, locale)))
+        outputs.append((local_path(ROOT, artifact["path"]), render(plan, locale)))
     # Check ALL committed outputs before any regeneration: missing files must fail.
     for path, expected in outputs:
         if args.check:

@@ -9,6 +9,7 @@
     "brief",
     "provenance",
     "view",
+    "rendering",
     "sources",
     "boundaries",
     "entities",
@@ -121,7 +122,10 @@
       ],
       "properties": {
         "historical_source_revision": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1
         },
         "current_integration_revision": {
@@ -470,6 +474,43 @@
         },
         "publication_approval": {
           "$ref": "#/$defs/review_gate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rendering": {
+      "type": "object",
+      "required": [
+        "directives",
+        "purpose_sha256",
+        "ambiguity"
+      ],
+      "properties": {
+        "directives": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "labelled_entities",
+              "directed_edges",
+              "boundaries",
+              "physical_mechanism",
+              "isometric_machine"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "purpose_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "ambiguity": {
+          "type": "string",
+          "enum": [
+            "clear",
+            "unresolved"
+          ]
         }
       },
       "additionalProperties": false

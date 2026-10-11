@@ -1,0 +1,2 @@
+# Source hashes and committed SVG byte comparisons require LF on every platform.
+* text=auto eol=lf

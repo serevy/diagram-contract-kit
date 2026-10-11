@@ -13,6 +13,7 @@ on:
       - 'README*'
       - 'LICENSE'
       - 'THIRD_PARTY_NOTICES.md'
+      - '.gitattributes'
       - '.github/workflows/contract-checks.yml'
   workflow_dispatch:
 
@@ -25,7 +26,11 @@ concurrency:
 
 jobs:
   deterministic-validation:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -35,10 +40,10 @@ jobs:
         with:
           python-version: '3.10'
       - name: Validate fictional contract before rendering
-        run: python3 scripts/validate_contract.py examples/fictional/diagram-contract.json
+        run: python scripts/validate_contract.py examples/fictional/diagram-contract.json
       - name: Deterministic regression and artifact tests
-        run: python3 -m unittest discover -s tests -v
+        run: python -m unittest discover -s tests -v
       - name: Require committed SVGs to exist and match
-        run: python3 scripts/render_example.py --check
+        run: python scripts/render_example.py --check
       - name: Check whitespace
         run: git diff --check
