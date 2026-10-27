@@ -102,12 +102,15 @@ validator itself does not call an AI service.
    cp -R /path/to/kit/skills/diagram-contract .agents/skills/
    ```
 
+   Run these commands from the target project's root in a POSIX shell.
+   On Windows, copy the skill directory using PowerShell or your file manager.
    Installation locations and invocation syntax vary by host. If your host
    does not support skills, read the skill instructions directly.
 3. From the target repository, adapt this request for your assistant:
 
    ```text
-   Use the diagram-contract skill from /path/to/kit.
+   Use the installed diagram-contract skill, or read
+   /path/to/kit/skills/diagram-contract/SKILL.md directly.
    Inspect this project's current README, architecture docs, and relevant
    ADRs/PDDRs. Before drawing, create a source-backed diagram-contract.json.
    Record real source revisions and SHA-256 hashes, facts versus assumptions,

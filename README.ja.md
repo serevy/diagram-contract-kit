@@ -61,13 +61,16 @@ mkdir -p .agents/skills
 cp -R /path/to/kit/skills/diagram-contract .agents/skills/
 ```
 
+上記のコピー例は、対象プロジェクトのルートからPOSIXシェルで実行します。
+WindowsではPowerShellやファイルマネージャーでSkillフォルダをコピーできます。
 Skillの配置場所と呼び出し方はホストごとに異なります。
 Skillに非対応なら、`SKILL.md`を直接参照して手順を実行できます。
 
 エージェントには、対象プロジェクトで次のように依頼できます。
 
 ```text
-/path/to/kit のdiagram-contract Skillを使ってください。
+このプロジェクトに導入したdiagram-contract Skillを使ってください。
+未導入の場合は/path/to/kit/skills/diagram-contract/SKILL.mdを直接参照してください。
 このプロジェクトのREADME・設計書・関連ADR/PDDRを確認し、
 描画前に、出典に裏付けられたdiagram-contract.jsonを作成してください。
 実際のリビジョンとSHA-256、事実と仮定、ノードと辺のID、
