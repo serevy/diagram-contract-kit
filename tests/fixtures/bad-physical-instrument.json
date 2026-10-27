@@ -34,14 +34,14 @@
     {
       "id": "historical_spec",
       "path": "examples/fictional/sources/historical-v1.md",
-      "sha256": "e0c69354d4b5d809c584a772eb18846737305bcfb32409f46092d7d4ac5a8748",
+      "sha256": "22e001fa38146b8c415c76b45744320b1b0d0e7c06bb772a5797ef8fd1e9d0a4",
       "revision": "fictional-spec-v1",
       "scope": "historical"
     },
     {
       "id": "current_spec",
       "path": "examples/fictional/sources/current-v1.md",
-      "sha256": "e0c69354d4b5d809c584a772eb18846737305bcfb32409f46092d7d4ac5a8748",
+      "sha256": "22e001fa38146b8c415c76b45744320b1b0d0e7c06bb772a5797ef8fd1e9d0a4",
       "revision": "fictional-integration-v1",
       "scope": "current_integration"
     }

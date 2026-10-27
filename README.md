@@ -13,10 +13,10 @@ boxes, arrows and boundaries. A physical mechanism is allowed only as a
 separately and explicitly requested metaphor. Semantic judgments remain
 advisory data; independent deterministic policy controls authorization.
 
-The motivating bug was an incorrect brief that required a physical tabletop
-instrument while the intended deliverable was a software architecture chart.
-The generator followed that brief. Our regression blocks the mismatch before
-generation; it does not blame the renderer. See [case provenance](THIRD_PARTY_NOTICES.md).
+An example regression covers an incorrect brief that required a physical
+tabletop instrument when the intended deliverable was a software architecture
+chart. The validator blocks the typed requirement mismatch before rendering;
+it does not blame the renderer. See [provenance notes](THIRD_PARTY_NOTICES.md).
 
 **Structural lint does not understand arbitrary prose contradictions.** Purpose
 text is separate from typed renderer directives, and changing it blocks generation
@@ -24,15 +24,18 @@ until reconciled with sources. Producers must use the validated `--render-plan`,
 never append `brief.use` as a prompt. A wrongly rebound purpose may still pass
 lint; unresolved meaning must be clarified before generation.
 
-## Quick start
+## Quick start (offline demo)
 
-Python 3.10+ and Git are sufficient. No package installation, browser,
-network access or credentials are required after checkout.
+Python 3.10+ and Git are sufficient. No additional Python packages, browser,
+network access or credentials are required after checkout. These commands check
+the **bundled fictional example**, its tests and its committed SVGs; they do
+not generate a diagram contract for your own project.
 
 ```sh
 git clone https://github.com/serevy/diagram-contract-kit.git
 cd diagram-contract-kit
 python3 scripts/validate_contract.py examples/fictional/diagram-contract.json
+# Optional: run the regression suite and check committed SVGs
 python3 -m unittest discover -s tests -v
 python3 scripts/render_example.py --check
 ```
@@ -67,43 +70,62 @@ Malformed/unreadable input, duplicate JSON keys and NaN/Infinity exit **2**.
 Diagnostics are stable in schema/graph order and contain no timestamps.
 The CLI reads local files and writes no artifacts or approval state.
 
-## Use with Codex / Astra Low
-
-Keep this checkout available and install only our skill in the target project's
-Codex skill directory. From the target project, replace `/path/to/kit`:
+For **your own repository**, use the
+[field guide](skills/diagram-contract/references/contract-guide.md) and
+[fictional example](examples/fictional/diagram-contract.json) to author a new
+`diagram-contract.json`. Replace the example's sources, revisions, hashes and
+diagram facts with real local files; the fictional contract is not a drop-in
+template that validates arbitrary projects. Then run from your project root:
 
 ```sh
-mkdir -p .agents/skills
-cp -R /path/to/kit/skills/diagram-contract .agents/skills/
+python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root .
+python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root . --render-plan
 ```
 
-Start or refresh Codex in that project, select **GPT-6 Astra** with **Low**
-reasoning effort in the available model controls, and invoke:
+The `--render-plan` command emits validated typed rendering data only.
+Structural PASS is not permission to publish a diagram.
 
-```text
-Use $diagram-contract from /path/to/kit. Inspect this repo's current README
-and architecture docs/ADRs/PDDRs. Make a factual software architecture
-contract before rendering. Record source revisions and byte hashes, facts,
-assumptions, entity/edge IDs, separate authority boundaries, en/ja labels,
-SVG outputs and pending human review gates. Validate it with the kit CLI
-using this repository as --root. Stop rendering if the contract fails.
-Separate purpose prose from typed rendering.directives; mark unresolved meaning
-before generation and use only the validated --render-plan for drawing.
-For classification-only flows, do not invent a policy/authorization gate.
-Return the contract and validation result; do not publish or merge.
-```
+## Use with an Agent Skills-compatible assistant (optional)
 
-For a quick agent smoke exercise, ask it to validate the fictional contract and
-the bad physical-instrument fixture, report exit 0 vs 1, and explain which
-requirement needs correction. No paid API calls or nested agent runner are
-needed. Model availability is supplied by the host; the skill does not select
-or install a model. Automated tests cover the skill format and deterministic
-workflow, not a measured Astra generation benchmark.
+The offline CLI works without any AI assistant. An assistant can help create a
+contract from your project's sources and review the resulting diagram, but the
+validator itself does not call an AI service.
 
-Other Agent Skills-compatible agents can load the same skill directory using
-their own installation conventions. This kit follows the
-[Agent Skills specification](https://agentskills.io/specification); it does not
-require a vendor-specific skill installer.
+1. Keep a local checkout of this kit so the Python validator and references
+   remain accessible.
+2. Install [the diagram-contract skill](skills/diagram-contract/SKILL.md) using
+   your assistant host's Agent Skills installation instructions. For example,
+   hosts that use a project-level `.agents/skills/` directory can run:
+
+   ```sh
+   mkdir -p .agents/skills
+   cp -R /path/to/kit/skills/diagram-contract .agents/skills/
+   ```
+
+   Installation locations and invocation syntax vary by host. If your host
+   does not support skills, read the skill instructions directly.
+3. From the target repository, adapt this request for your assistant:
+
+   ```text
+   Use the diagram-contract skill from /path/to/kit.
+   Inspect this project's current README, architecture docs, and relevant
+   ADRs/PDDRs. Before drawing, create a source-backed diagram-contract.json.
+   Record real source revisions and SHA-256 hashes, facts versus assumptions,
+   stable entity/edge IDs, requested locales and pending human review gates.
+   Separate the purpose text from typed rendering directives. Do not invent
+   policy gates for read-only flows or treat semantic output as authorization.
+   Validate the contract with /path/to/kit/scripts/validate_contract.py,
+   using this project as --root. Stop if validation fails or intent is unclear.
+   Draw only from the validated --render-plan and independently review the
+   semantics and visual result. Return the contract, checks and open reviews;
+   do not publish or merge without approval.
+   ```
+
+Any Agent Skills-compatible assistant may follow this workflow; compatibility
+depends on the host's skill-loading conventions. There is no required model,
+provider or reasoning-effort setting. The deterministic tests do not benchmark
+any model's diagram quality. AI-assisted steps may have costs set by your host;
+the offline CLI does not.
 
 ## Contract and validation
 

@@ -2,7 +2,7 @@
 name: diagram-contract
 description: Create a source-backed diagram brief and run deterministic checks before rendering architecture, dataflow, state, policy, or explicitly requested physical metaphor diagrams. Use to prevent incorrect diagram requirements and protect authority boundaries and provenance.
 license: MIT
-compatibility: Codex first; portable Agent Skills instructions. Python 3.10 or later for offline checks. Keep the diagram-contract-kit checkout available; no network or third-party integrations required.
+compatibility: Portable Agent Skills instructions. Offline CLI requires Python 3.10+ and a local kit checkout. Installation varies by host; no network or third-party integration is required for validation.
 ---
 
 Make the diagram contract before any rendering. Visual polish must preserve
