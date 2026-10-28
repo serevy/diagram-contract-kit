@@ -43,7 +43,7 @@ class ContractTests(unittest.TestCase):
         self.assertTrue(all(g['status'] == 'pending' for g in self.contract['review_gates'].values()))
 
     def test_spec_bug_physical_tabletop_instrument_before_generation(self):
-        """Independently authored reproduction of the #152 → #154 spec error."""
+        """Independently authored fictional requirement-mismatch regression."""
         bad = load_json(ROOT / 'tests/fixtures/bad-physical-instrument.json')
         self.assertEqual(bad['intent'], 'software_architecture')
         self.assertIn('physical tabletop instrument', bad['brief']['use'])

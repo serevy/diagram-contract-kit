@@ -23,13 +23,10 @@ upstream revision, assets and transitive dependency licenses before use.
 If any upstream code is later imported, preserve its copyright/license text
 and all required notices; the kit's MIT license cannot relicense it.
 
-The specification-error regression was independently reconstructed from the
-public descriptions in Semantic Decision Lab
-[#152](https://github.com/serevy/semantic-decision-lab/issues/152),
-[#154](https://github.com/serevy/semantic-decision-lab/issues/154) and
-[#159](https://github.com/serevy/semantic-decision-lab/issues/159).
-Only the problem pattern is reproduced: a software architecture intent with a
-physical tabletop instrument requirement. No Lab program files, protocols,
-source snapshots, research Evidence or experimental outputs are imported.
-The fictional example is unrelated to real measurements, proprietary designs,
-private IP, patents, secrets or any existing deployment.
+The specification-error regression is an independently authored fictional
+case: a software architecture intent is accidentally paired with a physical
+tabletop instrument requirement. Only that general mismatch pattern is
+reproduced. No private research code, protocols, source snapshots, datasets,
+experimental evidence or outputs are imported. The fictional example is
+unrelated to real measurements, proprietary designs, patents, secrets or any
+existing deployment.

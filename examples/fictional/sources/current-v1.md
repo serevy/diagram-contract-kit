@@ -1,7 +1,7 @@
 # Fictional request triage — specification v1
 
-This is an invented software flow, not a description of Semantic Decision Lab,
-a research measurement, or an implementation of a real authorization system.
+This is an invented software flow, not a research measurement or an
+implementation of a real authorization system.
 
 A request enters a semantic classifier. It emits a typed result including a
 category, uncertainty, and an abstain flag. This result is data and cannot

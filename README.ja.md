@@ -6,18 +6,23 @@ Python 3.10以上の標準ライブラリだけで動作します。
 
 構成図・データフロー・状態・ポリシー図は、事実に基づくラベル付きの箱・矢印・境界を既定とします。
 物理的な機械の比喩は、利用者が明示的に選んだ別の説明図として扱います。
-Semantic Decision Labで起きた「構成図なのに物理的な卓上装置を要求する仕様」を、
-独立して書き直した失敗fixtureで描画前に検出します。研究コードやEvidenceはコピーしていません。
+「ソフトウェア構成図なのに物理的な卓上装置を要求してしまう」という仕様の不一致を、
+架空の失敗fixtureとして再現し、描画前に検出します。非公開の研究コードや実験データは含みません。
 図の目的文と型付きの描画指示は分離します。目的文の変更や指示の不一致、未解決の曖昧さは生成前に失敗します。
 自由文の矛盾を全て自動理解する検証ではありません。ハッシュの再計算は意味の承認にならず、
 意味が残って曖昧な場合は人に確認し、生成側には検証済みの型付き計画だけを渡してください。
 
-## 実行
+## クイックスタート（オフラインのサンプル検証）
+
+必要なのはPython 3.10以上とGitです。チェックアウト後の追加パッケージ、
+ネットワーク接続、認証情報は不要です。次のコマンドは**同梱の架空サンプル**を検証し、
+テストと固定SVGの再現性を確認します。自分のプロジェクト用の図解仕様を自動生成するものではありません。
 
 ```sh
 git clone https://github.com/serevy/diagram-contract-kit.git
 cd diagram-contract-kit
 python3 scripts/validate_contract.py examples/fictional/diagram-contract.json
+# 任意：回帰テストとコミット済みSVGの一致確認
 python3 -m unittest discover -s tests -v
 python3 scripts/render_example.py --check
 ```
@@ -30,32 +35,57 @@ Windowsでは`python3`を`python`に置き換えます。LinuxとWindowsのCIで
 `tests/fixtures/ambiguous-authority.json`はexit 1、読めないJSONはexit 2です。
 正常でも意味・見た目・公開の承認はpendingのままです。
 
-## Codex / Astra Low
+**自分のリポジトリ**では、[契約ガイド](skills/diagram-contract/references/contract-guide.md)と
+[架空の完成例](examples/fictional/diagram-contract.json)を参考に
+`diagram-contract.json`を作成してください。出典ファイル・リビジョン・ハッシュ・図の事実は
+自分のプロジェクトに合わせて記録します。架空のJSONをそのまま使うことはできません。
+対象リポジトリのルートから次を実行します。
 
-対象プロジェクトからSkillをコピーします。キット全体のチェックアウトも保持してください。
+```sh
+python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root .
+python3 /path/to/kit/scripts/validate_contract.py diagram-contract.json --root . --render-plan
+```
+
+`--render-plan`は検証済みの型付き描画データだけを出力します。
+構造検証のPASSだけで図の公開が承認されるわけではありません。
+
+## Agent Skills対応エージェントで使う（任意）
+
+AIエージェントがなくても検証CLIは動作します。エージェントを使う場合は、
+このキットのチェックアウトを保持し、各ホストの手順に従って
+[diagram-contract Skill](skills/diagram-contract/SKILL.md)を読み込んでください。
+例えば、プロジェクト単位の`.agents/skills/`を使うホストでは次のように配置できます。
 
 ```sh
 mkdir -p .agents/skills
 cp -R /path/to/kit/skills/diagram-contract .agents/skills/
 ```
 
-Codexを更新・起動し、ホストでGPT-6 Astra / Lowを選択して、例えば次を依頼します。
+上記のコピー例は、対象プロジェクトのルートからPOSIXシェルで実行します。
+WindowsではPowerShellやファイルマネージャーでSkillフォルダをコピーできます。
+Skillの配置場所と呼び出し方はホストごとに異なります。
+Skillに非対応なら、`SKILL.md`を直接参照して手順を実行できます。
+
+エージェントには、対象プロジェクトで次のように依頼できます。
 
 ```text
-$diagram-contract を /path/to/kit から使用してください。
-README・設計文書・ADR/PDDRを確認して、描画前にソフトウェア構成図の契約を作成してください。
-出典とリビジョン・SHA-256、事実と仮定、ノードと辺、独立したポリシー／認可境界、
-英日ラベル、SVG出力、未承認の人間レビューゲートを記録してください。
-このプロジェクトを --root にしてキットのCLIで検証し、失敗時は描画を止めてください。
-目的文と rendering.directives を分け、未解決なら rendering.ambiguity を unresolved にしてください。
-描画には --render-plan の出力だけを使用し、目的文を描画プロンプトとして追加しないでください。
-分類だけの図にポリシー・認可ゲートを作らないでください。
-契約と検証結果を返してください。公開・マージはしないでください。
+このプロジェクトに導入したdiagram-contract Skillを使ってください。
+未導入の場合は/path/to/kit/skills/diagram-contract/SKILL.mdを直接参照してください。
+このプロジェクトのREADME・設計書・関連ADR/PDDRを確認し、
+描画前に、出典に裏付けられたdiagram-contract.jsonを作成してください。
+実際のリビジョンとSHA-256、事実と仮定、ノードと辺のID、
+要求言語と未承認の人間レビューゲートを記録してください。
+目的文と型付きrendering.directivesを分離し、意味が不明なら生成を止めてください。
+読み取り専用のフローに認可ゲートを創作せず、分類結果を認可と混同しないでください。
+このプロジェクトを--rootとして、キットの検証CLIを実行してください。
+描画には検証済みの--render-planを使い、結果を出典と独立して照合してください。
+契約・検証結果・未完了のレビューを返し、承認なく公開・マージしないでください。
 ```
 
-モデルの選択・提供はホスト側の設定です。有料推論や外部APIは不要です。
-自動テストはSkill形式と検証基盤を確認します。Astra生成の性能実測は含みません。
-他のAgent Skills対応エージェントでも、同じSkillを各ホストの方法で読み込めます。
+特定のAIプロバイダー、モデル、推論設定は必須ではありません。
+実際のSkill対応・モデル提供・AI利用料金は利用ホストに依存します。
+同梱の自動テストが検証するのはSkill形式と決定論的な処理であり、
+特定モデルの生成品質ではありません。
 
 ## 出力と制約
 
